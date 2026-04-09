@@ -21,6 +21,7 @@ export default function VoucherGrid({
           {pageVouchers.map((voucher, idx) => (
             <VoucherCard
               key={idx}
+              index={pageIndex * pageSize + idx + 1}
               voucher={voucher}
               ssid={ssid}
               gb={gb}

@@ -13,8 +13,8 @@ export default function Home() {
 
   // تحديث عنوان الصفحة ليكون الاسم الافتراضي لملف PDF عند الطباعة
   useEffect(() => {
-    document.title = `${ssid} - ${duration}`;
-  }, [ssid, duration]);
+    document.title = `${ssid} - ${duration} - ${vouchers.length} قسيمة`;
+  }, [ssid, duration, vouchers.length]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -191,7 +191,6 @@ export default function Home() {
           {vouchers.length > 0 ? (
             <div className="instructions no-print">
               <h3>معاينة الطباعة</h3>
-              <p>ستظهر صفحة واحدة فقط كنموذج هنا لتسريع الأداء.</p>
               <div
                 style={{
                   marginTop: "0.5rem",

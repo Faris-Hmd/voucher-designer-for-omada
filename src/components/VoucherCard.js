@@ -1,4 +1,5 @@
 export default function VoucherCard({
+  index,
   voucher,
   ssid,
   gb,
@@ -35,6 +36,18 @@ export default function VoucherCard({
 
   return (
     <div className="voucher-card" dir="rtl">
+      <div
+        style={{
+          position: "absolute",
+          top: "1mm",
+          left: "1mm",
+          fontSize: "6.5px",
+          color: "#999",
+          fontWeight: "800",
+        }}
+      >
+        #{index}
+      </div>
       <div className="card-content">
         <div className="card-ssid">
           <svg

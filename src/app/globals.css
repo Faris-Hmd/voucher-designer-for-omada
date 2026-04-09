@@ -192,7 +192,7 @@ small {
 .a4-page {
   /* A4 precise dimensions for web viewing. Print will override slightly if needed */
   width: 210mm;
-  height: 297mm;
+  min-height: 297mm;
   background: white;
   margin: 0 auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -214,6 +214,7 @@ small {
 /* Specific styling for the card component will be in VoucherCard.css or global as below */
 
 .voucher-card {
+  position: relative;
   border: 1px dashed #ccc; /* Cut lines */
   display: flex;
   flex-direction: row;
@@ -255,7 +256,7 @@ small {
 
 .voucher-card .card-pin {
   font-family: inherit;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 13px;
   background: #f1f5f9;
   padding: 1px 4px;
@@ -336,8 +337,8 @@ small {
   html,
   body {
     background: white;
-    width: 210mm;
-    height: 297mm;
+    margin: 0;
+    padding: 0;
   }
 
   .no-print {
@@ -350,7 +351,8 @@ small {
     margin: 0;
     padding: 10mm;
     width: 210mm;
-    height: 297mm;
+    min-height: 297mm;
+    box-sizing: border-box;
     /* Ensure no page breaks inside */
     page-break-inside: avoid;
   }
@@ -364,12 +366,5 @@ small {
   .voucher-card {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-  }
-}
-
-/* Limit preview on all screens to just 1 page for maximum performance and UI clarity */
-@media screen {
-  .voucher-preview-pages .a4-page:nth-child(n + 2) {
-    display: none !important;
   }
 }
