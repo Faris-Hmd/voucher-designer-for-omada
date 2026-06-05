@@ -9,7 +9,7 @@ export default function Home() {
   const [ssid, setSsid] = useState("شبكة واي فاي");
   const [gb, setGb] = useState("10");
   const [duration, setDuration] = useState("1 يوم");
-  const [showTraffic, setShowTraffic] = useState(true);
+  const [showTraffic, setShowTraffic] = useState(false);
   const [unlimitedTraffic, setUnlimitedTraffic] = useState(false);
   const [layoutPreset, setLayoutPreset] = useState("large");
   const [selectedDurationFilter, setSelectedDurationFilter] = useState("all");
