@@ -1,3 +1,5 @@
+import { friendlyDuration, friendlyTraffic } from "../utils/presets";
+
 export default function VoucherCard({
   index,
   voucher,
@@ -5,6 +7,7 @@ export default function VoucherCard({
   gb,
   duration,
   showTraffic,
+  preset,
 }) {
   let code = "N/A";
   if (typeof voucher === "string") {
@@ -23,37 +26,72 @@ export default function VoucherCard({
     }
   }
 
-  const isNumericDuration = !isNaN(parseFloat(duration)) && isFinite(duration);
-  const displayDuration = isNumericDuration ? `${duration} يوم` : duration;
+  // Auto-detect duration from individual voucher object
+  let cardDuration = duration;
+  if (typeof voucher === "object" && voucher !== null) {
+    const dKey = Object.keys(voucher).find(k => k.toLowerCase() === "duration");
+    if (dKey && voucher[dKey] !== undefined && voucher[dKey] !== "") {
+      cardDuration = friendlyDuration(voucher[dKey]);
+    }
+  }
+  const isNumericDuration = !isNaN(parseFloat(cardDuration)) && isFinite(cardDuration);
+  const displayDuration = isNumericDuration ? `${cardDuration} يوم` : cardDuration;
+
+  // Auto-detect traffic limit from individual voucher object
+  let cardGb = gb;
+  if (typeof voucher === "object" && voucher !== null) {
+    const tKey = Object.keys(voucher).find(
+      k => k.toLowerCase() === "traffic limit" || k.toLowerCase() === "trafficlimit" || k.toLowerCase() === "traffic_limit"
+    );
+    if (tKey && voucher[tKey] !== undefined && voucher[tKey] !== "") {
+      cardGb = friendlyTraffic(voucher[tKey]);
+    }
+  }
 
   const isUnlimited =
-    String(gb).trim() === "0" ||
-    String(gb).trim().toLowerCase() === "unlimited" ||
-    String(gb).trim() === "غير محدود" ||
-    String(gb).trim() === "";
-  const displayGb = isUnlimited ? "غير محدود" : String(gb).trim();
-  const gbSuffix = isUnlimited ? "" : "GB";
+    String(cardGb).trim() === "0" ||
+    String(cardGb).trim().toLowerCase() === "unlimited" ||
+    String(cardGb).trim() === "غير محدود" ||
+    String(cardGb).trim() === "";
+  const displayGb = isUnlimited ? "غير محدود" : String(cardGb).trim();
+  const hasUnit = displayGb.toLowerCase().includes("gb") || displayGb.toLowerCase().includes("mb") || displayGb.toLowerCase().includes("kb");
+  const gbSuffix = isUnlimited || hasUnit ? "" : "GB";
+
+  const activePreset = preset || {
+    fontSizeIndex: "6.5px",
+    fontSizeSsid: "8.5px",
+    fontSizePin: "13px",
+    fontSizeInfo: "10px",
+    paddingCard: "0mm",
+    gapCard: "2px",
+    pinPadding: "1px 4px",
+    iconSize: 10,
+  };
 
   return (
-    <div className="voucher-card" dir="rtl">
+    <div
+      className="voucher-card"
+      dir="rtl"
+      style={{
+        padding: activePreset.paddingCard,
+      }}
+    >
       <div
+        className="card-content"
         style={{
-          position: "absolute",
-          top: "1mm",
-          left: "1mm",
-          fontSize: "6.5px",
-          color: "#999",
-          fontWeight: "800",
+          gap: activePreset.gapCard,
         }}
       >
-        #{index}
-      </div>
-      <div className="card-content">
-        <div className="card-ssid">
+        <div
+          className="card-ssid"
+          style={{
+            fontSize: activePreset.fontSizeSsid,
+          }}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="10"
-            height="10"
+            width={activePreset.iconSize}
+            height={activePreset.iconSize}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -73,10 +111,22 @@ export default function VoucherCard({
           </svg>
           <span style={{ verticalAlign: "middle" }}>{ssid}</span>
         </div>
-        <div className="card-pin" dir="ltr">
+        <div
+          className="card-pin"
+          dir="ltr"
+          style={{
+            fontSize: activePreset.fontSizePin,
+            padding: activePreset.pinPadding,
+          }}
+        >
           {code}
         </div>
-        <div className="card-info">
+        <div
+          className="card-info"
+          style={{
+            fontSize: activePreset.fontSizeInfo,
+          }}
+        >
           <span>{displayDuration}</span>
           {showTraffic && (
             <>

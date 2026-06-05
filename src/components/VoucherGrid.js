@@ -6,8 +6,9 @@ export default function VoucherGrid({
   gb,
   duration,
   showTraffic,
+  preset,
 }) {
-  const pageSize = 108; // 6x18 layout
+  const pageSize = preset ? preset.pageSize : 108;
   const pages = [];
 
   for (let i = 0; i < vouchers.length; i += pageSize) {
@@ -17,7 +18,18 @@ export default function VoucherGrid({
   return (
     <div className="voucher-preview-pages">
       {pages.map((pageVouchers, pageIndex) => (
-        <div key={pageIndex} className="a4-page">
+        <div
+          key={pageIndex}
+          className="a4-page"
+          style={
+            preset
+              ? {
+                  gridTemplateColumns: `repeat(${preset.cols}, 1fr)`,
+                  gridTemplateRows: `repeat(${preset.rows}, 1fr)`,
+                }
+              : {}
+          }
+        >
           {pageVouchers.map((voucher, idx) => (
             <VoucherCard
               key={idx}
@@ -27,6 +39,7 @@ export default function VoucherGrid({
               gb={gb}
               duration={duration}
               showTraffic={showTraffic}
+              preset={preset}
             />
           ))}
         </div>

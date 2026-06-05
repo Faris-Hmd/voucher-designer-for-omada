@@ -192,7 +192,7 @@ small {
 .a4-page {
   /* A4 precise dimensions for web viewing. Print will override slightly if needed */
   width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
   background: white;
   margin: 0 auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -203,7 +203,7 @@ small {
   /* 6 columns, 18 rows to fit 108 exactly */
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(18, 1fr);
-  row-gap: 0mm;
+  row-gap: 2mm;
   column-gap: 2mm;
   page-break-after: always;
   /* Outline to show page boundary in preview */
@@ -215,7 +215,7 @@ small {
 
 .voucher-card {
   position: relative;
-  border: 1px dashed #ccc; /* Cut lines */
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -258,12 +258,12 @@ small {
   font-family: inherit;
   font-weight: 600;
   font-size: 13px;
-  background: #f1f5f9;
+  background: transparent;
   padding: 1px 4px;
   border-radius: 2px;
-  letter-spacing: 0.5px;
+  letter-spacing: 2px;
   text-align: center;
-  margin-bottom: 2px;
+  margin: 4px 0;
   color: #000;
 }
 
@@ -351,10 +351,11 @@ small {
     margin: 0;
     padding: 10mm;
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     box-sizing: border-box;
     /* Ensure no page breaks inside */
     page-break-inside: avoid;
+    page-break-after: always;
   }
 
   .main-content {
