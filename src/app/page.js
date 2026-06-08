@@ -11,12 +11,11 @@ export default function Home() {
   const [gb, setGb] = useState("10");
   const [duration, setDuration] = useState("1 يوم");
   const [showTraffic, setShowTraffic] = useState(false);
-  const [unlimitedTraffic, setUnlimitedTraffic] = useState(false);
+  const [unlimitedTraffic, setUnlimitedTraffic] = useState(true);
   const [layoutPreset, setLayoutPreset] = useState("large");
   const [selectedDurationFilter, setSelectedDurationFilter] = useState("all");
   const [selectedGroupFilter, setSelectedGroupFilter] = useState("all");
   const [groupByUserGroup, setGroupByUserGroup] = useState(false);
-  const [systemTheme, setSystemTheme] = useState("omada"); // 'omada' or 'ruijie'
 
   // States for imports
   const [importMode, setImportMode] = useState("single"); // 'single' or 'compare'
@@ -102,21 +101,6 @@ export default function Home() {
     const first = list[0];
     if (typeof first !== "object" || first === null) return;
 
-    // Auto-detect system brand theme based on columns
-    const hasRuijieKeys = Object.keys(first).some(
-      k => k.toLowerCase() === "period" || k.toLowerCase() === "traffic used/total"
-    );
-    if (hasRuijieKeys) {
-      setSystemTheme("ruijie");
-    } else {
-      const hasOmadaKeys = Object.keys(first).some(
-        k => k.toLowerCase() === "voucher code" && k === "Voucher Code"
-      );
-      if (hasOmadaKeys) {
-        setSystemTheme("omada");
-      }
-    }
-
     // Detect duration (Period or Duration)
     const dKey = Object.keys(first).find(
       k => k.toLowerCase() === "duration" || k.toLowerCase() === "period"
@@ -146,6 +130,12 @@ export default function Home() {
     }
   };
 
+  const handleImportModeChange = (mode) => {
+    setImportMode(mode);
+    setSelectedDurationFilter("all");
+    setSelectedGroupFilter("all");
+  };
+
   const handleSingleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -157,6 +147,8 @@ export default function Home() {
       setSelectedGroupFilter("all");
     } catch (err) {
       alert("حدث خطأ أثناء تحميل الملف: " + err.message);
+    } finally {
+      e.target.value = ""; // Reset value so same file can be uploaded again
     }
   };
 
@@ -169,6 +161,8 @@ export default function Home() {
       setOldFileVouchers(data);
     } catch (err) {
       alert("حدث خطأ أثناء تحميل الملف القديم: " + err.message);
+    } finally {
+      e.target.value = ""; // Reset value so same file can be uploaded again
     }
   };
 
@@ -183,6 +177,8 @@ export default function Home() {
       setSelectedGroupFilter("all");
     } catch (err) {
       alert("حدث خطأ أثناء تحميل الملف الجديد: " + err.message);
+    } finally {
+      e.target.value = ""; // Reset value so same file can be uploaded again
     }
   };
 
@@ -295,35 +291,52 @@ export default function Home() {
   useEffect(() => {
     const activeDuration = selectedDurationFilter === "all" ? duration : selectedDurationFilter;
     const activeGroup = selectedGroupFilter === "all" ? "" : ` - ${selectedGroupFilter}`;
-    const sysName = systemTheme === "omada" ? "أومادا" : "رويجي";
+    const isRuijie = vouchers.length > 0 && Object.keys(vouchers[0]).some(
+      k => k.toLowerCase() === "period" || k.toLowerCase() === "traffic used/total"
+    );
+    const sysName = isRuijie ? "رويجي" : "أومادا";
     document.title = `${ssid} - ${sysName} - ${activeDuration}${activeGroup} - ${filteredVouchers.length} كرت`;
-  }, [ssid, duration, selectedDurationFilter, selectedGroupFilter, filteredVouchers.length, systemTheme]);
+  }, [ssid, duration, selectedDurationFilter, selectedGroupFilter, filteredVouchers.length, vouchers]);
+
+  // Register Service Worker for PWA installability or unregister in dev to prevent caching freeze
+  useEffect(() => {
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      if (process.env.NODE_ENV === "development") {
+        // Unregister service worker in development to prevent caching issues
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          let unregistered = false;
+          for (let registration of registrations) {
+            registration.unregister();
+            unregistered = true;
+          }
+          if (unregistered) {
+            console.log("Dev mode: Unregistered service worker to prevent caching. Reloading page...");
+            window.location.reload();
+          }
+        });
+      } else {
+        // Register in production
+        navigator.serviceWorker.register("/sw.js").catch(err => {
+          console.warn("Service worker registration failed:", err);
+        });
+      }
+    }
+  }, []);
 
   return (
-    <div className={`app-container system-${systemTheme}`} dir="rtl">
+    <div className="app-container system-ruijie" dir="rtl">
       <header className="no-print header">
         <div className="header-content-wrapper">
           <div className="header-content">
-            <h1>مصمم كروت الواي فاي</h1>
-            <p>
-              تصميم وطباعة كروت واي فاي احترافية على ورق A4 (Omada & Ruijie)
-            </p>
-          </div>
-          <div className="system-selector">
-            <button
-              type="button"
-              className={`system-tab ${systemTheme === "omada" ? "active" : ""}`}
-              onClick={() => setSystemTheme("omada")}
-            >
-              TP-Link Omada
-            </button>
-            <button
-              type="button"
-              className={`system-tab ${systemTheme === "ruijie" ? "active" : ""}`}
-              onClick={() => setSystemTheme("ruijie")}
-            >
-              Ruijie Reyee
-            </button>
+            <div className="header-logo-title">
+              <img src="/icon.png" alt="Voucher Designer Logo" className="header-logo" />
+              <div className="header-text">
+                <h1>Voucher Designer</h1>
+                <p>
+                  تصميم وطباعة كروت واي فاي احترافية على ورق A4 (Omada & Ruijie)
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -340,14 +353,14 @@ export default function Home() {
                 <button
                   type="button"
                   className={`mode-tab ${importMode === "single" ? "active" : ""}`}
-                  onClick={() => setImportMode("single")}
+                  onClick={() => handleImportModeChange("single")}
                 >
                   ملف كروت واحد
                 </button>
                 <button
                   type="button"
                   className={`mode-tab ${importMode === "compare" ? "active" : ""}`}
-                  onClick={() => setImportMode("compare")}
+                  onClick={() => handleImportModeChange("compare")}
                 >
                   مقارنة ملفين (تصفية القديم)
                 </button>
@@ -529,20 +542,18 @@ export default function Home() {
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="gb">البيانات (جيجا)</label>
-                <input
-                  type="number"
-                  id="gb"
-                  value={gb}
-                  onChange={(e) => setGb(e.target.value)}
-                  placeholder="مثال: 10"
-                  disabled={unlimitedTraffic}
-                  style={{
-                    opacity: unlimitedTraffic ? 0.35 : 1,
-                  }}
-                />
-              </div>
+              {!unlimitedTraffic && (
+                <div className="form-group">
+                  <label htmlFor="gb">البيانات (جيجا)</label>
+                  <input
+                    type="number"
+                    id="gb"
+                    value={gb}
+                    onChange={(e) => setGb(e.target.value)}
+                    placeholder="مثال: 10"
+                  />
+                </div>
+              )}
 
               <div className="form-group checkboxes-row">
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
