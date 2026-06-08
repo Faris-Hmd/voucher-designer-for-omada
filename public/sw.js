@@ -1,4 +1,4 @@
-const CACHE_NAME = "voucher-designer-v2";
+const CACHE_NAME = "voucher-designer-v3";
 const ASSETS_TO_CACHE = [
   "/",
   "/icon.png",
@@ -37,9 +37,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Bypass service worker for Next.js development and dynamic asset requests
+  // Bypass service worker only for Next.js hot-reloading development assets
   const url = new URL(event.request.url);
-  if (url.pathname.includes("_next") || url.pathname.includes("webpack")) {
+  if (
+    url.pathname.includes("webpack") ||
+    url.pathname.includes("hot-update") ||
+    url.pathname.includes("hmr") ||
+    url.pathname.includes("development")
+  ) {
     return;
   }
 

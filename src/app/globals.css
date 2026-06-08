@@ -80,16 +80,22 @@ body {
 .header {
   background: white;
   border-bottom: 1px solid var(--border);
-  padding: 1.25rem 2rem;
+  padding: 0.65rem 1.5rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .header-content h1 {
   margin: 0;
   color: var(--accent);
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.3px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  height: 2.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  transform: translateY(2px);
 }
 
 .header-content p {
@@ -103,19 +109,53 @@ body {
   display: flex;
   align-items: center;
   gap: 0.85rem;
+  direction: ltr;
 }
 
 .header-logo {
-  height: 3.75rem;
-  width: 3.75rem;
+  height: 2.5rem;
+  width: 2.5rem;
   object-fit: contain;
   border-radius: 8px;
   background: white;
+  display: block;
 }
 
 .header-text {
   display: flex;
   flex-direction: column;
+}
+
+/* ====== INSTALL PWA BUTTON ====== */
+.install-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.install-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.install-button:active {
+  transform: translateY(0);
+}
+
+.install-icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 /* ====== MAIN CONTENT ====== */
@@ -228,7 +268,7 @@ select {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 0.85rem 1rem;
+  padding: 1.25rem 1.5rem;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 1rem;
@@ -255,7 +295,7 @@ select:focus {
 input[type="file"] {
   cursor: pointer;
   font-size: 0.88rem;
-  padding: 0.65rem 0.85rem;
+  padding: 1.15rem 1.35rem;
 }
 
 input[type="file"]::file-selector-button {
@@ -332,10 +372,10 @@ small {
 .btn-primary {
   background: var(--gradient-accent);
   color: white;
-  padding: 0.85rem 1.5rem;
+  padding: 1.5rem 2.5rem;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   cursor: pointer;
   width: 100%;
@@ -625,7 +665,7 @@ small {
   input[type="number"],
   input[type="file"],
   select {
-    padding: 0.65rem 0.75rem;
+    padding: 1rem 1.25rem;
     font-size: 0.88rem;
   }
 
@@ -646,8 +686,8 @@ small {
   }
 
   .btn-primary {
-    padding: 0.65rem 1rem;
-    font-size: 0.9rem;
+    padding: 1.25rem 2rem;
+    font-size: 1.1rem;
   }
 
   .stats-bar {
@@ -692,6 +732,7 @@ small {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  direction: ltr;
 }
 
 .system-selector {

@@ -23,6 +23,7 @@ export default function Home() {
   const [oldFileVouchers, setOldFileVouchers] = useState([]);
   const [newFileVouchers, setNewFileVouchers] = useState([]);
   const [comparisonStats, setComparisonStats] = useState(null);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   const activePreset = LAYOUT_PRESETS[layoutPreset] || LAYOUT_PRESETS.large;
 
@@ -323,6 +324,37 @@ export default function Home() {
     }
   }, []);
 
+  // Handle PWA installation prompt
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      console.log("App installed successfully!");
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User choice outcome: ${outcome}`);
+    setDeferredPrompt(null);
+  };
+
   return (
     <div className="app-container system-ruijie" dir="rtl">
       <header className="no-print header">
@@ -330,12 +362,7 @@ export default function Home() {
           <div className="header-content">
             <div className="header-logo-title">
               <img src="/icon.png" alt="Voucher Designer Logo" className="header-logo" />
-              <div className="header-text">
-                <h1>Voucher Designer</h1>
-                <p>
-                  تصميم وطباعة كروت واي فاي احترافية على ورق A4 (Omada & Ruijie)
-                </p>
-              </div>
+              <h1>Voucher Designer</h1>
             </div>
           </div>
         </div>
@@ -371,7 +398,7 @@ export default function Home() {
             {importMode === "single" && (
               <div className="form-group">
                 <label htmlFor="file-upload">
-                  رفع بيانات الكروت (Excel / JSON)
+                  رفع بيانات الكروت (Omada / Ruijie XLSX)
                 </label>
                 <input
                   type="file"
@@ -380,7 +407,7 @@ export default function Home() {
                   onChange={handleSingleFileUpload}
                 />
                 <small>
-                  قم برفع ملف الكروت — يدعم ملفات Omada و Ruijie
+                  قم برفع ملف الكروت — يدعم ملفات Omada و Ruijie (.xlsx, .xls)
                 </small>
               </div>
             )}
@@ -390,7 +417,7 @@ export default function Home() {
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1rem" }}>
                 <div className="form-group">
                   <label htmlFor="old-file-upload">
-                    1. ملف الكروت القديمة (مرجع لاستبعاده)
+                    1. ملف الكروت القديمة (Omada / Ruijie XLSX)
                   </label>
                   <input
                     type="file"
@@ -404,7 +431,7 @@ export default function Home() {
                 </div>
                 <div className="form-group">
                   <label htmlFor="new-file-upload">
-                    2. ملف الكروت الجديدة (المراد طباعتها)
+                    2. ملف الكروت الجديدة (Omada / Ruijie XLSX)
                   </label>
                   <input
                     type="file"
