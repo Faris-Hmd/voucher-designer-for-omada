@@ -79,7 +79,7 @@ export const LAYOUT_PRESETS = {
 export function friendlyDuration(durationStr) {
   if (!durationStr) return "";
   const cleaned = String(durationStr).trim();
-  const match = cleaned.match(/^(\d+(?:\.\d+)?)\s*(Hour|Day|Minute|Second)s?$/i);
+  const match = cleaned.match(/^(\d+(?:\.\d+)?)\s*(Hour|Day|Minute|Second|Week|Month)s?$/i);
   if (!match) return cleaned;
 
   const num = parseFloat(match[1]);
@@ -93,6 +93,10 @@ export function friendlyDuration(durationStr) {
     hours = num / 3600;
   } else if (unit === "day") {
     hours = num * 24;
+  } else if (unit === "week") {
+    hours = num * 168;
+  } else if (unit === "month") {
+    hours = num * 720;
   }
 
   // Format based on hours
@@ -143,15 +147,18 @@ export function friendlyDuration(durationStr) {
 
 export function friendlyTraffic(trafficStr) {
   if (trafficStr === undefined || trafficStr === null) return "";
-  const cleaned = String(trafficStr).trim();
+  let cleaned = String(trafficStr).trim();
+  if (cleaned.includes("/")) {
+    cleaned = cleaned.split("/")[1].trim();
+  }
   if (cleaned === "0" || cleaned.toLowerCase() === "unlimited" || cleaned === "") {
     return "غير محدود";
   }
 
-  const numMatch = cleaned.match(/^(\d+)(?:\s*(MB|GB|KB|B))?$/i);
+  const numMatch = cleaned.match(/^(\d+(?:\.\d+)?)(?:\s*(MB|GB|KB|B))?$/i);
   if (!numMatch) return cleaned;
 
-  const val = parseInt(numMatch[1], 10);
+  const val = parseFloat(numMatch[1]);
   const unit = numMatch[2] ? numMatch[2].toUpperCase() : "MB"; // Default is MB
 
   if (unit === "MB") {

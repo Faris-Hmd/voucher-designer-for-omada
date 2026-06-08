@@ -14,6 +14,7 @@ export default function VoucherCard({
     code = voucher;
   } else if (typeof voucher === "object" && voucher !== null) {
     if (voucher["Voucher Code"]) code = String(voucher["Voucher Code"]);
+    else if (voucher["Voucher code"]) code = String(voucher["Voucher code"]);
     else if (voucher.pin) code = String(voucher.pin);
     else if (voucher.code) code = String(voucher.code);
     else if (voucher.password) code = String(voucher.password);
@@ -29,7 +30,7 @@ export default function VoucherCard({
   // Auto-detect duration from individual voucher object
   let cardDuration = duration;
   if (typeof voucher === "object" && voucher !== null) {
-    const dKey = Object.keys(voucher).find(k => k.toLowerCase() === "duration");
+    const dKey = Object.keys(voucher).find(k => k.toLowerCase() === "duration" || k.toLowerCase() === "period");
     if (dKey && voucher[dKey] !== undefined && voucher[dKey] !== "") {
       cardDuration = friendlyDuration(voucher[dKey]);
     }
@@ -41,7 +42,11 @@ export default function VoucherCard({
   let cardGb = gb;
   if (typeof voucher === "object" && voucher !== null) {
     const tKey = Object.keys(voucher).find(
-      k => k.toLowerCase() === "traffic limit" || k.toLowerCase() === "trafficlimit" || k.toLowerCase() === "traffic_limit"
+      k => k.toLowerCase() === "traffic limit" || 
+           k.toLowerCase() === "trafficlimit" || 
+           k.toLowerCase() === "traffic_limit" ||
+           k.toLowerCase() === "traffic used/total" ||
+           k.toLowerCase() === "traffic_used_total"
     );
     if (tKey && voucher[tKey] !== undefined && voucher[tKey] !== "") {
       cardGb = friendlyTraffic(voucher[tKey]);
