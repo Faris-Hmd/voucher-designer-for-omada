@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import VoucherGrid from "../components/VoucherGrid";
+import VoucherCard from "../components/VoucherCard";
 import { LAYOUT_PRESETS, friendlyDuration, friendlyTraffic } from "../utils/presets";
 
 export default function Home() {
@@ -138,7 +139,7 @@ export default function Home() {
         <div className="header-content">
           <h1>مصمم الكروت</h1>
           <p>
-            تصميم كروت الواي فاي لطباعتها على ورق A4. أكمل الإعدادات بالأسفل.
+            تصميم وطباعة كروت واي فاي احترافية على ورق A4
           </p>
         </div>
       </header>
@@ -159,29 +160,21 @@ export default function Home() {
                 onChange={handleFileUpload}
               />
               <small>
-                يدعم رفع ملفات Excel (.xlsx) أو ملفات JSON. سيتم استخراج الكروت
-                مباشرة.
+                يدعم ملفات Excel (.xlsx) و JSON — سيتم استخراج الكروت تلقائياً
               </small>
             </div>
 
             <div className="form-grid">
               {uniqueDurations.length > 1 && (
-                <div className="form-group" style={{ gridColumn: "span 2" }}>
-                  <label htmlFor="durationFilter" style={{ color: "var(--primary)", fontWeight: "bold" }}>
-                    تصفية لطباعة مجموعة محددة (حسب المدة)
+                <div className="form-group full-width-field">
+                  <label htmlFor="durationFilter" style={{ color: "var(--accent-light)", fontWeight: "bold" }}>
+                    تصفية حسب المدة
                   </label>
                   <select
                     id="durationFilter"
+                    className="filter-select"
                     value={selectedDurationFilter}
                     onChange={(e) => setSelectedDurationFilter(e.target.value)}
-                    style={{
-                      padding: "0.75rem",
-                      border: "2px solid var(--primary-light)",
-                      borderRadius: "6px",
-                      fontSize: "1rem",
-                      background: "#f8fafc",
-                      fontWeight: "500",
-                    }}
                   >
                     <option value="all">كل الفئات المتاحة ({vouchers.length} كرت)</option>
                     {uniqueDurations.map((d) => {
@@ -202,26 +195,18 @@ export default function Home() {
                       );
                     })}
                   </select>
-                  <small style={{ color: "#64748b" }}>
-                    تحديد فئة معينة سيقوم بإخفاء باقي الفئات وتحديث إحصائيات وعدد الصفحات للطباعة الفورية لهذه الفئة فقط.
+                  <small>
+                    تحديد فئة معينة سيطبع هذه الفئة فقط
                   </small>
                 </div>
               )}
 
-              <div className="form-group">
-                <label htmlFor="layoutPreset">حجم الكروت (في الصفحة)</label>
+              <div className="form-group full-width-field">
+                <label htmlFor="layoutPreset">حجم الكروت</label>
                 <select
                   id="layoutPreset"
                   value={layoutPreset}
                   onChange={(e) => setLayoutPreset(e.target.value)}
-                  style={{
-                    padding: "0.75rem",
-                    border: "1px solid var(--border)",
-                    borderRadius: "6px",
-                    fontSize: "1rem",
-                    transition: "all 0.2s",
-                    background: "white",
-                  }}
                 >
                   {Object.values(LAYOUT_PRESETS).map((p) => (
                     <option key={p.id} value={p.id}>
@@ -231,7 +216,7 @@ export default function Home() {
                 </select>
               </div>
 
-              <div className="form-group">
+              <div className="form-group full-width-field">
                 <label htmlFor="ssid">اسم الشبكة</label>
                 <input
                   type="text"
@@ -239,19 +224,6 @@ export default function Home() {
                   value={ssid}
                   onChange={(e) => setSsid(e.target.value)}
                   placeholder="مثال: My WiFi Network"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="gb">البيانات (جيجا)</label>
-                <input
-                  type="text"
-                  id="gb"
-                  value={gb}
-                  onChange={(e) => setGb(e.target.value)}
-                  placeholder="مثال: 10"
-                  disabled={unlimitedTraffic}
-                  style={unlimitedTraffic ? { opacity: 0.5 } : {}}
                 />
               </div>
 
@@ -266,46 +238,45 @@ export default function Home() {
                 />
               </div>
 
-              <div
-                className="form-group"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  marginTop: "1.5rem",
-                }}
-              >
+              <div className="form-group">
+                <label htmlFor="gb">البيانات (جيجا)</label>
                 <input
-                  type="checkbox"
-                  id="showTraffic"
-                  checked={showTraffic}
-                  onChange={(e) => setShowTraffic(e.target.checked)}
+                  type="number"
+                  id="gb"
+                  value={gb}
+                  onChange={(e) => setGb(e.target.value)}
+                  placeholder="مثال: 10"
+                  disabled={unlimitedTraffic}
+                  style={{
+                    opacity: unlimitedTraffic ? 0.35 : 1,
+                  }}
                 />
-                <label htmlFor="showTraffic" style={{ marginBottom: 0 }}>
-                  إظهار سعة البيانات
-                </label>
               </div>
 
-              <div
-                className="form-group"
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  marginTop: "1.5rem",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  id="unlimitedTraffic"
-                  checked={unlimitedTraffic}
-                  onChange={(e) => setUnlimitedTraffic(e.target.checked)}
-                />
-                <label htmlFor="unlimitedTraffic" style={{ marginBottom: 0 }}>
-                  ترافيك غير محدود
-                </label>
+              <div className="form-group checkboxes-row">
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <input
+                    type="checkbox"
+                    id="showTraffic"
+                    checked={showTraffic}
+                    onChange={(e) => setShowTraffic(e.target.checked)}
+                  />
+                  <label htmlFor="showTraffic" style={{ marginBottom: 0, cursor: "pointer" }}>
+                    إظهار سعة البيانات
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <input
+                    type="checkbox"
+                    id="unlimitedTraffic"
+                    checked={unlimitedTraffic}
+                    onChange={(e) => setUnlimitedTraffic(e.target.checked)}
+                  />
+                  <label htmlFor="unlimitedTraffic" style={{ marginBottom: 0, cursor: "pointer" }}>
+                    ترافيك غير محدود
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -317,40 +288,56 @@ export default function Home() {
 
         <section className="preview-section">
           {filteredVouchers.length > 0 ? (
-            <div className="instructions no-print">
-              <h3>معاينة الطباعة</h3>
-              <div
-                style={{
-                  marginTop: "0.5rem",
-                  padding: "0.75rem",
-                  background: "#eff6ff",
-                  borderRadius: "8px",
-                  color: "#1d4ed8",
-                  fontWeight: "bold",
-                }}
-              >
-                العدد الإجمالي: {filteredVouchers.length} كرت | صفحات الطباعة:{" "}
-                {Math.ceil(filteredVouchers.length / activePreset.pageSize)} صفحة | الكروت في كل صفحة:{" "}
-                {activePreset.pageSize}
+            <div className="no-print">
+              <div className="instructions">
+                <h3>معاينة الطباعة</h3>
+                <div className="stats-bar">
+                  <div className="stat-chip">
+                    العدد: <span className="stat-value">{filteredVouchers.length} كرت</span>
+                  </div>
+                  <div className="stat-chip">
+                    الصفحات: <span className="stat-value">{Math.ceil(filteredVouchers.length / activePreset.pageSize)} صفحة</span>
+                  </div>
+                  <div className="stat-chip">
+                    لكل صفحة: <span className="stat-value">{activePreset.pageSize} كرت</span>
+                  </div>
+                </div>
+              </div>
+              <div className="example-card-wrapper">
+                <p className="example-label">نموذج الكرت</p>
+                <div className="example-card-container">
+                  <VoucherCard
+                    index={1}
+                    voucher={filteredVouchers[0]}
+                    ssid={ssid}
+                    gb={unlimitedTraffic ? "غير محدود" : gb}
+                    duration={duration}
+                    showTraffic={showTraffic}
+                    preset={activePreset}
+                  />
+                </div>
               </div>
             </div>
           ) : (
             <div className="empty-state no-print">
-              <div className="empty-icon">📄</div>
+              <div className="empty-icon">—</div>
               <h3>لا يوجد كروت للمعاينة</h3>
-              <p>قم برفع ملف الكروت لمعاينة تصميم البطاقة هنا.</p>
+              <p>قم برفع ملف الكروت لمعاينة التصميم هنا</p>
             </div>
           )}
 
+          {/* Full grid hidden on screen, only visible during print */}
           {filteredVouchers.length > 0 && (
-            <VoucherGrid
-              vouchers={filteredVouchers}
-              ssid={ssid}
-              gb={unlimitedTraffic ? "غير محدود" : gb}
-              duration={duration}
-              showTraffic={showTraffic}
-              preset={activePreset}
-            />
+            <div className="print-only-grid">
+              <VoucherGrid
+                vouchers={filteredVouchers}
+                ssid={ssid}
+                gb={unlimitedTraffic ? "غير محدود" : gb}
+                duration={duration}
+                showTraffic={showTraffic}
+                preset={activePreset}
+              />
+            </div>
           )}
         </section>
       </main>
